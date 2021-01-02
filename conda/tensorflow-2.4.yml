@@ -1,0 +1,29 @@
+# --------------------------------------------------------------------
+# This files has been created and maintained by Jeff Heaton
+# https://github.com/jeffheaton/t81_558_deep_learning/blob/master/tensorflow.yml
+#
+# https://www.youtube.com/watch?v=zRY5lx-So-c
+# https://github.com/jeffheaton/t81_558_deep_learning/blob/master/t81_558_class_01_1_overview.ipynb
+name: tensorflow
+ 
+dependencies:
+    - python=3.8
+    - pip>=19.0
+    - jupyter
+    - scikit-learn
+    - scipy
+    - pandas
+    - pandas-datareader
+    - matplotlib
+    - pillow
+    - tqdm
+    - requests
+    - h5py
+    - pyyaml
+    - flask
+    - boto3
+    - pip:
+        - tensorflow==2.4
+        - bayesian-optimization
+        - gym
+        - kaggle
