@@ -1,1 +1,4 @@
 .idea
+model/*
+resources/images/raw
+resources/images/preprocessed

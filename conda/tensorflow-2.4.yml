@@ -27,3 +27,4 @@ dependencies:
         - bayesian-optimization
         - gym
         - kaggle
+        - opencv
