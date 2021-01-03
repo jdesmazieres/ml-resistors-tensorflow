@@ -45,7 +45,7 @@ def normalize(fileset: list):
 
     normalized = ut.shadow_remove(normalized)
 
-    normalized = ut.gaussianBlur(normalized, 1)
+    normalized = ut.gaussian_blur(normalized, 1)
 
     for i in range(len(fileset)):
         cv2.imwrite(fileset[i], normalized[i])

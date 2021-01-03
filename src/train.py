@@ -1,31 +1,18 @@
 """
 Model training and store
 """
-import os
-import glob
-import pathlib
-import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
 from tensorflow.keras import layers
-from tensorflow.keras.preprocessing import image
 
-DATASET_ROOT_DIR = "../resources/images/"
-MODEL_DIR = "model"
-CHECKPOINT_PATH = MODEL_DIR + "/checkpoint-{epoch:04d}.ckpt"
-MODEL_PATH = MODEL_DIR + "/resistors-model.h5"
-BATCH_SIZE = 32
-IMG_HEIGHT = 176
-IMG_WIDTH = 64
+from constants import *
+
+""" Number of training cycles """
+EPOCHS = 64
+""" Seed for random number generation """
 SEED = 1337
 AUTOTUNE = tf.data.experimental.AUTOTUNE
-CLASSES = ['10', '100', '100k', '10k', '150', '1M', '1k',
-           '20', '200', '20k', '220', '220k', '270', '2k', '2k2',
-           '300k', '330', '3k3',
-           '470', '470k', '47k', '4k7',
-           '510', '51k', '5k1',
-           '680', '680k', '68k', '6k8']
 
 
 # https://www.tensorflow.org/tutorials/load_data/images
@@ -68,8 +55,7 @@ def train(classes, train_ds, val_ds, epochs=4):
         # layers.experimental.preprocessing.RandomFlip("vertical", seed=SEED),  # already done in input image dataset
         layers.experimental.preprocessing.RandomRotation(0.05),
         layers.experimental.preprocessing.RandomZoom(0.05),
-        tf.keras.layers.experimental.preprocessing.RandomContrast(
-            0.05, seed=SEED),
+        tf.keras.layers.experimental.preprocessing.RandomContrast(0.05, seed=SEED),
         # tf.keras.layers.experimental.preprocessing.RandomTranslation(0.1, 0.1, seed=SEED)
     ])
 
@@ -101,15 +87,6 @@ def train(classes, train_ds, val_ds, epochs=4):
         loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=['accuracy'])
 
-    # Create a callback that saves the model's weights
-    # checkpoint_dir = os.path.dirname(checkpointPath)
-    # cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpointPath,
-    #                                                  save_weights_only=True,
-    #                                                  save_freq=10 * BATCH_SIZE,
-    #                                                  verbose=1)
-    # Save the weights using the `checkpoint_path` format
-    # model.save_weights(checkpointPath.format(epoch=0))
-
     training = model.fit(
         train_ds,
         validation_data=val_ds,
@@ -125,7 +102,7 @@ def train(classes, train_ds, val_ds, epochs=4):
     return model, training
 
 
-def displayTraining(history, epochs):
+def display_model_training(history, epochs):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
 
@@ -150,12 +127,11 @@ def displayTraining(history, epochs):
 
 
 def _train():
-    epochs = 72
-    (class_names, train_ds, val_ds) = load(DATASET_ROOT_DIR + 'train-2')
+    (class_names, train_ds, val_ds) = load(TRAIN_DATASET_DIR)
     train_ds = configure_for_performance(train_ds)
     val_ds = configure_for_performance(val_ds)
-    model, training = train(class_names, train_ds, val_ds, epochs)
-    displayTraining(training, epochs)
+    model, training = train(class_names, train_ds, val_ds, EPOCHS)
+    display_model_training(training, EPOCHS)
 
 
 _train()

@@ -12,22 +12,7 @@ from image_utils import utils as ut
 
 from tensorflow.keras.preprocessing import image
 
-DATASET_ROOT_DIR = "../resources/images/"
-MODEL_DIR = "model"
-MODEL_PATH = MODEL_DIR + "/resistors-model.h5"
-IMG_HEIGHT = 176
-IMG_WIDTH = 64
-AUTOTUNE = tf.data.experimental.AUTOTUNE
-"""
-Category of resistors corresponding to the prediction values
-Prediction output values is an integer between 0 and 28
-"""
-CLASSES = ['10', '100', '100k', '10k', '150', '1M', '1k',
-           '20', '200', '20k', '220', '220k', '270', '2k', '2k2',
-           '300k', '330', '3k3',
-           '470', '470k', '47k', '4k7',
-           '510', '51k', '5k1',
-           '680', '680k', '68k', '6k8']
+from constants import *
 
 
 def preprocess(filename, height, width):
@@ -41,13 +26,13 @@ def preprocess(filename, height, width):
     """
     img = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
     cvt_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    cvt_image = ut.shadow_remove(cvt_image)  # best accuracy with shadow removal
-    # cvt_image = _gaussianBlur(cvt_image) # best accuracy without blur
+    cvt_image = ut.shadow_remove([cvt_image])[0]  # best accuracy with shadow removal
+    # cvt_image = ut.gaussianBlur([cvt_image]) # best accuracy without blur
     cvt_image = cv2.resize(cvt_image, (width, height))
     return Image.fromarray(cvt_image)  # convert to PIL image
 
 
-def loadImageArray(filename):
+def load_2_image_array(filename):
     """
     Load an image from disk and return an image array to feed Keras
 
@@ -61,7 +46,7 @@ def loadImageArray(filename):
     return img_array
 
 
-def restoreModel(verbose=False):
+def load_model(verbose=False):
     """
     Load the model from disk
 
@@ -76,7 +61,7 @@ def restoreModel(verbose=False):
     return model
 
 
-def evaluateModel(model, test_ds):
+def evaluate_model(model, test_ds):
     """
     Evaluate the model accuracy based on a test dataset
 
@@ -101,24 +86,29 @@ def restore_and_predict():
     """
     Restore the model from disc and execute predictions based on images stored in a directory
     """
-    model = restoreModel(False)
+    model = load_model(False)
 
+    # data = tf.keras.preprocessing.image_dataset_from_directory(
+    #     TRAIN_DATASET_DIR,
+    #     image_size=(IMG_HEIGHT, IMG_WIDTH),
+    #     batch_size=BATCH_SIZE)
     # evaluateModel(model, data)
 
     failed_images = []
     failed = 0
     count = 0
     # check prediction each image from 'raw' dataset
-    for name in glob.glob(DATASET_ROOT_DIR + 'raw/**/*.png'):
+    for name in glob.glob(TEST_DATASET_PATH):
         path = pathlib.PurePath(name)
         value = path.parent.name
         count += 1
 
-        img = loadImageArray(name)
+        img = load_2_image_array(name)
         predictions = model.predict(img)
 
         score = tf.nn.softmax(predictions[0])
-        if value != CLASSES[np.argmax(score)]:
+        class_idx = np.argmax(score)
+        if value != CLASSES[class_idx]:
             failed_images.append(name)
             failed += 1
 

@@ -2,6 +2,7 @@
 Image processing utility module
 
 This module provides high-level, dedicated methods on top of openCV module
+all method apply on a list of images as an input
 """
 import os
 import cv2
@@ -29,7 +30,7 @@ def contrast(images, clip=1.0, grid=8):
     return contrasted
 
 
-def filePaths(rootpath):
+def file_paths(rootpath):
     """
     Recursively retrieve the path of each image from the root directory
     :param rootpath: images root directory
@@ -40,8 +41,6 @@ def filePaths(rootpath):
                    if file.endswith('.png')])
 
 
-# --------------------------------
-# resize a liste of images, and return the list of resized images
 def resize(images, width, height, verbose=False):
     """
     resize a list of images, and return the list of resized images
@@ -65,7 +64,7 @@ def resize(images, width, height, verbose=False):
     return res_img
 
 
-def gaussianBlur(images, bsize=5):
+def gaussian_blur(images, bsize=5):
     """
     Apply gaussian blur to the input image list
 
@@ -81,9 +80,6 @@ def gaussianBlur(images, bsize=5):
     return processed
 
 
-# ----------------------------------
-# Remove noise
-# Using Gaussian Blur
 def blur(images, bsize=5):
     """
     Apply blur to the input image list
@@ -100,7 +96,7 @@ def blur(images, bsize=5):
     return processed
 
 
-def medianBlur(images, bsize=5):
+def median_blur(images, bsize=5):
     """
     Apply median blur to the input image list
 
@@ -116,28 +112,24 @@ def medianBlur(images, bsize=5):
     return processed
 
 
-# ----------------------------------
-# Remove noise
-# Using Median Blur
-def bilateralFilter(images, d=5, sigmaColor=1, sigmaSpace=1):
+def bilateral_filter(images, d=5, sigma_color=1, sigma_space=1):
     """
     Apply bilateral filtering to the input image list
 
     This is used to reduce noise
     :param images: input list of images
     :param d:
-    :param sigmaColor:
-    :param sigmaSpace:
+    :param sigma_color:
+    :param sigma_space:
     :return: processed image list
     """
     processed = []
     for i in range(len(images)):
-        _p = cv2.bilateralFilter(images[i], d, sigmaColor, sigmaSpace)
+        _p = cv2.bilateralFilter(images[i], d, sigma_color, sigma_space)
         processed.append(_p)
     return processed
 
 
-# https://medium.com/arnekt-ai/shadow-removal-with-open-cv-71e030eadaf5
 def shadow_remove(images):
     """
     Apply shadow removal to the input image list
@@ -145,6 +137,8 @@ def shadow_remove(images):
     This is used to improve image quality
     :param images: input list of images
     :return: processed image list
+    Refs:
+        https://medium.com/arnekt-ai/shadow-removal-with-open-cv-71e030eadaf5
     """
     processed = []
     for i in range(len(images)):
@@ -176,7 +170,6 @@ def image_resize(images, width=None, height=None, inter=cv2.INTER_AREA):
         image = images[i]
         # initialize the dimensions of the image to be resized and
         # grab the image size
-        dim = None
         (h, w) = image.shape[:2]
 
         # if both the width and height are None, then return the
